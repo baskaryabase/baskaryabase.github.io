@@ -1,0 +1,1 @@
+{"version":3,"sources":["/home/baymax/Desktop/Projects/task/slide/src/App.css"],"names":[],"mappings":"AAAA,KACE,YAAa,AACb,WAAY,AACZ,sBAAuB,AACvB,UAAU,AACV,kBAAmB,AACnB,oBAAsB,CACvB","file":"main.61713a51.chunk.css","sourcesContent":[".dot {\n  height: 15px;\n  width: 15px;\n  background-color: #bbb;\n  padding:5;\n  border-radius: 50%;\n  display: inline-block;\n}\n"]}
