@@ -6,6 +6,7 @@
 
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Baloo+Thambi+2:wght@400..800&display=swap');
 
 /* You can override the default Infima variables here. */
 :root {
@@ -20,6 +21,11 @@
   --ifm-font-family-base: "Inter", sans-serif;
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
   --ifm-toc-border-color: #eaeefb;
+
+  font-family: "Baloo Thambi 2", serif;
+  font-optical-sizing: auto;
+  // font-weight: <weight>;
+  font-style: normal;
 
   /*----font-variables------*/
   --text-xxs: 0.625rem; // 10px

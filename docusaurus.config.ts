@@ -74,11 +74,11 @@ const config: Config = {
     },
     image: 'https://kubesense-web.s3.ap-south-1.amazonaws.com/images/og_image.png',
     navbar: {
-      title: '',
-      logo: {
-        alt: 'KubeSense logo',
-        src: 'img/kubesense-black.svg',
-      },
+      title: 'Takeaways of Baskar Yabase',
+      // logo: {
+      //   alt: 'KubeSense logo',
+      //   src: 'img/kubesense-black.svg',
+      // },
       items: [
         // {
         //   type: 'docSidebar',
@@ -97,38 +97,38 @@ const config: Config = {
     footer: {
       style: 'light',
       links: [
-        {
-          title: "Socials",
-          items : [
-            {
-              label : "X",
-              href: "https://x.com/KubeSense",
-            },
-            {
-              label: "LinkedIn",
-              href : "https://www.linkedin.com/company/kubesense"
-            },{
-              label : "Youtube",
-              href : "https://www.youtube.com/@kubesense"
-            }
-          ]
-        },
-        {
-          title: 'More',
-          items: [
-            {
-              label: 'Blog',
-              href : "https://kubesense.ai/blog"
-            },
-            {
-              label: 'GitHub',
-              href: 'https://github.com/kubesense-ai',
-            },
-          ],
-        },
+        // {
+        //   title: "Socials",
+        //   items : [
+        //     {
+        //       label : "X",
+        //       href: "https://x.com/KubeSense",
+        //     },
+        //     {
+        //       label: "LinkedIn",
+        //       href : "https://www.linkedin.com/company/kubesense"
+        //     },{
+        //       label : "Youtube",
+        //       href : "https://www.youtube.com/@kubesense"
+        //     }
+        //   ]
+        // },
+        // {
+        //   title: 'More',
+        //   items: [
+        //     {
+        //       label: 'Blog',
+        //       href : "https://kubesense.ai/blog"
+        //     },
+        //     {
+        //       label: 'GitHub',
+        //       href: 'https://github.com/kubesense-ai',
+        //     },
+        //   ],
+        // },
         
       ],
-      copyright: '© 2024 TykeVision, Inc. All rights reserved.',
+      copyright: 'Made with devotion',
     },
     prism: {
       theme: prismThemes.github,
