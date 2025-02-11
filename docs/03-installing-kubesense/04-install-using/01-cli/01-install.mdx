@@ -1,0 +1,92 @@
+# Kubesense CLI Guide
+
+The **Kubesense CLI** provides a streamlined approach to configuring and deploying Kubesense in your Kubernetes environment. This guide will walk you through the steps for configuring the CLI, deploying Kubesense in-cluster, and installing the server and sensor components individually.
+
+---
+
+## 🔧 Prerequisites
+
+Before using the Kubesense CLI, make sure that:
+
+- You have installed the Kubesense CLI. (Refer to the [Installation Guide](./01-install.mdx) if not installed yet.)
+- You have a valid **Kubesense token** for authentication.
+
+---
+
+## 🚀 Quick Start
+
+### 1. Configuring Kubesense with Your Token
+
+To start using the Kubesense CLI, you’ll need to authenticate by configuring it with your unique token.
+
+```bash
+kubesense configure <TOKEN>
+```
+
+- Replace `<TOKEN>` with your actual Kubesense token.
+- This command authenticates the CLI with your Kubesense account and sets up the environment for deployment.
+  
+> **Note**: If your token expires or you need to switch accounts, re-run this command with the new token.
+
+---
+
+### 2. Installing Kubesense In-Cluster
+
+To deploy Kubesense with both the server and sensor components in the same cluster, use the `install` command:
+
+```bash
+kubesense install
+```
+
+This command deploys the **Kubesense server** and **sensor components** within your Kubernetes cluster, enabling comprehensive observability from a single deployment.
+
+> **Use Case**: This installation mode is ideal for single-cluster environments or when you want a simple setup with both components in the same location.
+
+---
+
+## 📂 Installing Components Individually
+
+In some cases, you may want to install the server and sensor components separately. This approach is particularly useful for multi-cluster environments where you want centralized data aggregation (server) while monitoring multiple clusters with individual sensors.
+
+### Install the Server Component Only
+
+The server component collects, aggregates, and stores observability data received from sensors. To deploy only the server:
+
+```bash
+kubesense install server
+```
+
+- This command installs the Kubesense server, allowing it to act as a central hub for managing data and visualizing metrics.
+- **Persistent Storage**: Ensure that the server component has access to persistent storage for data retention and analysis.
+
+> **Use Case**: Deploying the server separately is ideal for centralized data collection, particularly in multi-cluster environments where you have multiple sensors sending data to one server.
+
+---
+
+### Install the Sensor Component Only
+
+The sensor component collects observability data directly from the Kubernetes cluster, including metrics, logs, and network traffic data. To install only the sensor component:
+
+```bash
+kubesense install sensor
+```
+
+- This command deploys the sensor, which collects data from the current cluster and forwards it to the server.
+- **eBPF Support**: Ensure that the nodes in the cluster support eBPF, as the sensor relies on eBPF for efficient data collection.
+
+> **Use Case**: Use this deployment mode to monitor multiple clusters by installing sensors in each cluster while connecting them to a central Kubesense server.
+
+---
+
+## 📝 Summary of Commands
+
+| Command                       | Description                                                   |
+|-------------------------------|---------------------------------------------------------------|
+| `kubesense configure <TOKEN>` | Configures the CLI with your Kubesense authentication token.  |
+| `kubesense install`           | Installs both server and sensor components in-cluster.       |
+| `kubesense install server`    | Installs only the server component.                           |
+| `kubesense install sensor`    | Installs only the sensor component.                           |
+
+---
+
+With the Kubesense CLI, you can configure and deploy Kubesense components in a flexible, scalable manner that fits your specific observability needs. Use the appropriate commands to set up single-cluster or multi-cluster deployments and begin monitoring your Kubernetes environments with ease.

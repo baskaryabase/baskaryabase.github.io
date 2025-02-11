@@ -1,0 +1,141 @@
+---
+title: ECS EC2 Deployment
+---
+
+## Prerequisites
+
+- **AWS Account**: Ensure you have access to an AWS account.
+- **IAM Permissions**: IAM user/role with permissions for ECS, EC2, IAM, and S3 (if required).
+- **ECS Cluster**: An ECS cluster with EC2 instances already set up, with allocated public IP.
+- **Docker Image**: Your application is containerized and pushed to a container registry (e.g., Amazon Elastic Container Registry or Docker Hub).
+- **Config File**: The configuration file (e.g., `config.yaml`) is ready and accessible.
+
+## Adding Containers to Existing EC2 Task Definition
+
+1. **Navigate to Task Definition**:  
+   Go to the ECS console and select the existing EC2 task definition.
+
+2. **Edit Task Definition**:  
+   Choose the option to revise or create a new revision of the task definition.
+
+3. **Add Containers**:  
+:::info
+Download the configuration files tarball from https://docker.kubesense.ai/configs.tar.
+Extract the files and transfer them to the EC2 target machine to facilitate easy attachment to the containers.
+:::
+
+   Add the following containers:
+    1. ### kubesensor
+        #### **Container Image Details**
+        - **Image Name:**  
+          `365639915496.dkr.ecr.us-east-1.amazonaws.com/kubesensor:1.1.0`
+        
+        - **Host PID**
+
+        - **Host Network Mode**
+
+        - **Privileged Access:**  
+          `Note: Enable privileged access for the container to allow eBPF programs to be instrumented into the kernel.`
+
+        - **Container Linux capabilities** 
+          * SYS_ADMIN
+          * SYS_RESOURCE
+          * SYS_PTRACE
+          * NET_ADMIN
+          * NET_RAW
+          * IPC_LOCK
+          * SYSLOG 
+
+        #### **Port Information**
+        The container exposes the following ports for communication:
+
+        | Port | Purpose                 |
+        |------|-------------------------|
+        | 22143 | Application Health Check |
+
+        #### **Volume Mount Paths**
+        The container uses specific mount paths for handling configurations, data storage, and logs:
+
+        | **Source Path**                     | **Mount Path**                                  | **Purpose**                    |
+        |-------------------------------------|---------------------------------------------|--------------------------------|
+        | `{hostpath}/kubesensor.yaml`        | `/etc/kubesensor/kubesensor.yaml`           | Sensor Configuration file      |
+        | `/var/run/docker.sock`              | `/var/run/docker.sock`                      | to capture stats & container info |
+        | `/sys/kernel/debug`                 | `/sys/kernel/debug`                         | eBPF instrumentation           |
+
+    2. ### logsensor
+        #### **Container Image Details**
+        - **Image Name:**  
+          `365639915496.dkr.ecr.us-east-1.amazonaws.com/vector:0.43.X-debian`
+
+        #### **Volume Mount Paths**
+        The container uses specific mount paths for handling configurations, data storage, and logs:
+
+        | **Source Path**                          | **Mount Path**                  | **Purpose**                    |
+        |------------------------------------------|---------------------------------|---------------------------------|
+        | `{hostpath}/logsensor.yaml`              | `/etc/vector/`                  | logsensor Configuration file   |
+        | `/var/run/docker.sock`                   | `/var/run/docker.sock`          | to capture logs                |
+    
+    3. ### Metrics Scrapper
+        #### **Container Image Details**
+        - **Image Name:**  
+          `365639915496.dkr.ecr.us-east-1.amazonaws.com/vmagent:v1.101.0`
+
+        - **Container Start Command**
+          * -promscrape.config=/config/scrape.yml
+          * -remoteWrite.tmpDataPath=/tmpData
+          * -remoteWrite.maxDiskUsagePerURL=1073741824
+          * -envflag.enable=true
+          * -envflag.prefix=VM_
+          * -loggerFormat=json
+          * -promscrape.dropOriginalLabels=true
+          * -promscrape.streamParse=true
+          * -remoteWrite.maxDiskUsagePerURL=1GB
+          * -remoteWrite.showURL=true
+          * -remoteWrite.tlsInsecureSkipVerify=true
+          * -remoteWrite.url=http://**\{\{ METRICS_STORE_HOST }}**:**\{\{ METRICS_STORE_PORT }}**/api/v1/write
+
+          :::info
+          Replace METRICS_STORE_HOST & METRICS_STORE_PORT with appropriate values
+          :::
+
+        #### **Volume Mount Paths**
+        The container uses specific mount paths for handling scrapping:
+
+        | **Source Path**                          | **Mount Path**                  | **Purpose**                    |
+        |------------------------------------------|---------------------------------|---------------------------------|
+        | `{hostpath}/scrape.yaml`                 | `/config/scrape.yml`            | Scrape Configuration file   |
+
+    4. ### Cadvisor
+        #### **Container Image Details**
+        - **Image Name:**  
+          `365639915496.dkr.ecr.us-east-1.amazonaws.com/cadvisor:latest`
+        - **Host PID**
+        - **Privileged Access** 
+
+        #### **Volume Mount Paths**
+
+        | **Source Path**                          | **Mount Path**                    |
+        |------------------------------------------|-----------------------------------|
+        | `/`                                      | `/rootfs`                         |
+        | `/var/run`                               | `/var/run`                        |
+        | `/sys`                                   | `/sys`                            |
+        | `/var/lib/docker/`                       | `/var/lib/docker/`                |
+        | `/dev/disk/`                             | `/dev/disk/`                      |
+
+    5. ### Node Exporter
+        #### **Container Image Details**
+        - **Image Name:**  
+          `365639915496.dkr.ecr.us-east-1.amazonaws.com/node-exporter:v1.8.1`
+        - **Host PID**
+        - **Privileged Access** 
+        #### **Volume Mount Paths**
+        The container uses specific mount paths for handling scrapping:
+
+        | **Source Path**                          | **Mount Path**                  | **Purpose**                    |
+        |------------------------------------------|---------------------------------|---------------------------------|
+        | `{hostpath}/scrape.yaml`                 | `/config/scrape.yml`            | Scrape Configuration file   |
+
+4. **Save and Update**:  
+   Save the changes and update the ECS service with the new task definition revision.
+
+These steps will integrate the additional containers into your ECS setup.

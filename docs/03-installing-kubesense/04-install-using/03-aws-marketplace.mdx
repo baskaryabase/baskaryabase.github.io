@@ -1,0 +1,265 @@
+---
+title: Installing from AWS Marketplace
+sidebar_label: AWS Marketplace
+---
+
+This guide provides step-by-step instructions to deploy Kubesense on an Amazon EKS (Elastic Kubernetes Service) cluster using `kubectl`, `eksctl`, and `helm`.
+
+## Prerequisites
+
+Before deploying Kubesense, ensure the following:
+
+- You have an Amazon EKS cluster running.
+- You have identified the target cluster where Kubesense will be deployed (this is where sensors will be installed).
+- You have access to AWS CLI, `eksctl`, and `kubectl` installed on your local machine.
+- You have Helm installed on your local machine.
+
+## Server Deployment
+
+### Step 1: Create the `kubesense` Namespace
+
+First, create a namespace in your Kubernetes cluster where the Kubesense resources will be deployed.
+
+```bash
+kubectl create namespace kubesense
+```
+
+### Step 2: Create IAM Service Account for Kubesense
+
+Use the following command to create an IAM service account for the `kubesense` namespace and attach the necessary AWS policies for marketplace metering and license management.
+
+Replace `<ENTER_YOUR_CLUSTER_NAME_HERE>` with the name of your EKS cluster.
+
+```bash
+eksctl create iamserviceaccount \
+    --name kubesense \
+    --namespace kubesense \
+    --cluster <ENTER_YOUR_CLUSTER_NAME_HERE> \
+    --attach-policy-arn arn:aws:iam::aws:policy/AWSMarketplaceMeteringFullAccess \
+    --attach-policy-arn arn:aws:iam::aws:policy/AWSMarketplaceMeteringRegisterUsage \
+    --attach-policy-arn arn:aws:iam::aws:policy/service-role/AWSLicenseManagerConsumptionPolicy \
+    --approve \
+    --override-existing-serviceaccounts
+```
+
+This command will create the necessary IAM roles and policies required for the Kubesense AI platform to operate.
+
+### Step 3: Authenticate with AWS ECR
+
+Next, authenticate with Amazon ECR (Elastic Container Registry) to pull the Kubesense Helm chart from the private repository.
+
+```bash
+aws ecr get-login-password \
+    --region us-east-1 | helm registry login \
+    --username AWS \
+    --password-stdin 709825985650.dkr.ecr.us-east-1.amazonaws.com
+```
+
+### Step 4: Pull the Kubesense Helm Chart
+
+Create a directory to store the Helm chart and download the chart from the specified ECR repository.
+
+```bash
+mkdir kubesense && cd kubesense
+helm pull oci://709825985650.dkr.ecr.us-east-1.amazonaws.com/kubesense-ai/kubesense --version 1.0.20
+```
+
+### Step 5: Extract the Helm Chart
+
+Extract the Helm chart by running the following commands:
+
+```bash
+tar xf $(pwd)/* && find $(pwd) -maxdepth 1 -type f -delete
+```
+
+This will extract the Helm chart into the current directory and remove any unnecessary files.
+
+### Step 6: Install Kubesense
+
+Create `kubesense-values.yaml` file with below values.
+> **_NOTE:_** The default configuration for deploying Kubesense server components is optimized for environments with 8 vCPU and 16 GiB of memory. If your environment has resource constraints, adjust the resource allocation accordingly to match your available system capacity.
+
+```
+global:
+  deploymentType: "server"
+  cluster_name: <your_aws_cluster_name>
+  dashboardHostName: <your_dashboard_host>
+  aws_account_id: <your_aws_account_id>
+  aws_region: <your_aws_region>
+
+aggregator:
+  resources:
+    limits:
+      cpu: 750m
+      memory: 500Mi
+    requests:
+      cpu: 500m
+      memory: 200Mi
+
+clickhouse:
+  resources:
+    limits:
+      cpu: 2000m
+      memory: 4000Mi
+    requests:
+      cpu: 1000m
+      memory: 3000Mi
+
+kubecol:
+  enabled: true
+  resources:
+    limits:
+      cpu: 750m
+      memory: 2000Mi
+    requests:
+      cpu: 500m
+      memory: 1500Mi
+
+mysql:
+  resources:
+    limits:
+      cpu: 1000m
+      memory: 1536Mi
+    requests:
+      cpu: 750m
+      memory: 1024Mi
+
+victoria-metrics-single:
+  server:
+    retentionPeriod: 7d
+    resources:
+      limits:
+        cpu: 500m
+        memory: 750Mi
+      requests:
+        cpu: 400m
+        memory: 500Mi
+
+victoria-metrics-agent:
+  resources:
+    limits:
+      cpu: 500m
+      memory: 750Mi
+    requests:
+      cpu: 400m
+      memory: 500Mi
+
+# Sensor Components
+otel-agent:
+  resources:
+    limits:
+      cpu: 500m
+      memory: 768Mi
+    requests:
+      cpu: 250m
+      memory: 512Mi
+
+logsensor:
+  resources:
+    limits:
+      cpu: 200m
+      memory: 500Mi
+    requests:
+      cpu: 100m
+      memory: 250Mi
+
+resources:
+  limits:
+    cpu: 300m
+    memory: 300Mi
+  requests:
+    cpu: 100m
+    memory: 100Mi
+```
+
+#### Parameters:
+ * `cluster_name`: The name of your Kubernetes cluster.
+ * `dashboardHostName`: The hostname for the Kubernetes dashboard. Example: **kubesense.your_domain.com**
+ * `aws_account_id`: Your AWS account ID where the infrastructure resources (such as EKS, S3, etc.) are managed.
+ * `aws_region`: The AWS region where kubesense resources are deployed, e.g., `us-west-2`, `us-east-1`, etc.
+
+Install the Kubesense Helm chart in the `kubesense` namespace using the Helm command.
+
+```bash
+helm install kubesense --namespace kubesense -f ./kubesense-values.yaml ./kubesense
+```
+
+This will deploy Kubesense in your EKS cluster under the `kubesense` namespace.
+
+### Step 7: Verify the Deployment
+
+Once the installation is complete, you can verify that the resources are deployed correctly by checking the status of the pods in the `kubesense` namespace:
+
+```bash
+kubectl get pods -n kubesense
+```
+
+You should see the Kubesense pods running in your cluster.
+
+## Sensor Deployment
+
+Identify the cluster you want to monitor. Install kubesense sensors into the cluster.
+
+Create a directory to store the Helm chart and download the chart from the specified ECR repository.
+
+```bash
+mkdir sensor && cd sensor
+helm pull oci://709825985650.dkr.ecr.us-east-1.amazonaws.com/kubesense-ai/kubesensor --version 1.0.7
+```
+
+### Extract the Helm Chart
+
+Extract the Helm chart:
+
+```bash
+tar xf $(pwd)/* && find $(pwd) -maxdepth 1 -type f -delete
+```
+
+### Install sensors
+
+Install the Kubesense Helm chart in the `kubesense` namespace using the Helm command.
+
+```bash
+helm install kubesensor --namespace kubesense -f ../kubesense-values.yaml ./kubesensor
+```
+
+## Login and Explore
+
+After successfully deploying Kubesense on your Amazon EKS cluster, follow these steps to access and explore the platform. This section will guide you through logging in, accessing the dashboard, and navigating the core features to monitor resources deployed in the cluster.
+
+1. **Access the Kubesense Web Interface:**
+
+   Open your web browser and navigate to the Kubesense platform using the provided URL. This could be either a public DNS endpoint or a load balancer URL that you set up during the deployment of Kubesense on your EKS cluster.
+   
+   Example URL: `https://<your-kubesense-dashboard-url>`
+
+2. **Login with Default Credentials:**
+    
+    Use the default login credentials to sign in:
+     - **Email Address**: `user@domain.ai`
+     - **Password**: `*******` (Given during deployment process)
+    
+    Once you enter the credentials, click **Login**.
+
+3. **Change the Default Password (Recommended):**
+    
+    Upon logging in for the first time, it is highly recommended to change the default password for security purposes.
+     - Hover on the **User Avatar** (At the left-bottom of sidebar), Open **Profile** screen.
+     - Choose **Change Password**, enter your current password (`*******`), and set a new, secure password.
+     - Click **Save Changes** to confirm the change.
+
+4. **Explore the Dashboard:**
+   
+    After logging in, you will be directed to the main dashboard. Here you can view traces of your application, Logs, and track Infrastructure performance of applications. Follow documentation to understand various capabilities of Kubesense.
+
+5. **Logging Out:**
+  
+    Once you are done exploring, you can safely log out by clicking the **Logout** button, found in the left-bottom corner of the dashboard under your profile icon.
+
+## Uninstalling kubesense
+
+To remove all resources associated with Kubesense, delete the entire namespace with the following command:
+
+```bash
+kubectl delete namespaces kubesense
+```

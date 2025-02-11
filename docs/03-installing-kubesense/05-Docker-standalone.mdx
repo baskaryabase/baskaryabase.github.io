@@ -1,0 +1,72 @@
+---
+title: Docker Standalone deployment
+---
+
+# **KubeSense Docker Standalone Installation Guide**
+
+This document explains how to install the KubeSense agent using a standalone Docker setup with the provided `setup.sh` script. Follow these steps carefully to ensure a successful installation.
+
+---
+
+## **Prerequisites**
+Before running the installation script, ensure the following:
+1. **Docker Installed:** Docker should be installed and running on your system. [Install Docker](https://docs.docker.com/get-docker/) if not already set up.
+2. **Environment Variable Setup:** The `KUBESENSE_SECRET` environment variable must be set. This secret is required for authentication.
+
+---
+
+## **Installation Steps**
+
+### **Step 1: Set the Environment Variable**
+Set the `KUBESENSE_SECRET` environment variable with your secret key before running the script. Replace `<your-secret-key>` with the actual secret.
+
+#### For Linux/MacOS:
+```bash
+export KUBESENSE_SECRET=<your-secret-key>
+```
+
+---
+
+### **Step 2: Run the Installation Script**
+Execute the `setup.sh` script to install the KubeSense agent.
+
+#### Command:
+```bash
+bash <(curl -s -L https://docker.kubesense.ai/setup.sh) sensor
+```
+   
+
+The script will:
+- Pull the required Docker image for the KubeSense agent.
+- Configure and run the container with the necessary settings.
+
+---
+
+### **Step 3: Verify the Installation**
+After the script completes, verify that the KubeSense agent is running by listing the active Docker containers.
+
+#### Command:
+```bash
+docker ps
+```
+
+You should see the KubeSense container running with details like container ID, image, and status.
+
+## **Troubleshooting**
+1. **Missing KUBESENSE_SECRET Error:**
+   - Ensure the `KUBESENSE_SECRET` environment variable is correctly set before running the script.
+
+2. **Container Not Running:**
+   - Run `docker logs <container_name>` to view logs and diagnose the issue.
+
+3. **Docker Command Not Found:**
+   - Verify Docker is installed and running on your machine.
+
+---
+
+## **Additional Information**
+- **Required Permissions:** The container runs in privileged mode to enable kernel-level operations like eBPF.
+
+For more details, visit [KubeSense Documentation](https://docs.kubesense.ai).
+
+---

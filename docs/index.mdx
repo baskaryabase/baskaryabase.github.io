@@ -1,0 +1,73 @@
+---
+title: "🚀     Getting Started"
+sidebar_position: 1
+---
+
+## 📘 Introduction to Kubesense Deployment
+
+Welcome to the Kubesense deployment guide! This document provides clear, step-by-step instructions for deploying **Kubesense**, a cutting-edge, eBPF-based observability tool, in an on-premises Kubernetes environment using **Helm**. 
+
+Kubesense leverages eBPF technology to offer deep insights into network traffic, resource utilization, and latency across your Kubernetes clusters, enabling efficient monitoring and troubleshooting. By following this guide, you’ll have Kubesense fully deployed and operational to help you monitor, trace, and optimize your clusters with ease.
+
+## What is Kubesense?
+
+**Kubesense** is an advanced observability platform designed specifically for Kubernetes environments. By harnessing the power of **eBPF** (extended Berkeley Packet Filter) technology, Kubesense provides deep visibility into network traffic, resource utilization, application performance, and latency across your clusters with minimal overhead. 
+
+Built to handle complex, high-scale deployments, Kubesense enables DevOps, SREs, and engineering teams to quickly identify, diagnose, and resolve issues, making it an ideal choice for modern, cloud-native applications.
+
+---
+
+## Auto Instrumentation Using eBPF
+
+Kubesense’s **Auto Instrumentation** leverages **eBPF (Extended Berkeley Packet Filter)** technology to seamlessly monitor network traffic in Kubernetes environments. With eBPF, Kubesense dynamically attaches to kernel-level events, enabling detailed observability without modifying application code or containers. This approach is particularly effective for monitoring network communications across services, providing real-time insights with minimal impact on performance.
+
+### What is eBPF?
+
+**eBPF** is a powerful technology that allows safe, high-performance execution of custom code in the Linux kernel. Originally used for packet filtering, eBPF has evolved into a tool for dynamic monitoring, security, and networking within the kernel. With eBPF, Kubesense can capture rich telemetry data directly from the kernel, ensuring high-fidelity monitoring of network activity and resource usage.
+
+## How Auto Instrumentation with eBPF Works
+
+### 1. Attaching Kernel Hooks
+
+Kubesense uses eBPF to attach kernel hooks at various points in the networking stack. These hooks allow Kubesense to monitor network events, such as connections, requests, and data transfers, without requiring any code changes in the applications themselves.
+
+- **Socket-level Monitoring**: Hooks are placed at the socket level to capture information on TCP and UDP connections, including source/destination IPs, ports, and packet counts.
+- **Packet Flow Tracking**: By hooking into packet-level events, eBPF tracks data flow through the network, capturing details about traffic volume and latency between services.
+- **Protocol Identification**: eBPF hooks can identify specific protocols (e.g., HTTP, HTTPS, gRPC) in use, allowing Kubesense to provide protocol-specific insights and metrics.
+
+---
+
+### Key Features
+
+- **Network Traffic Monitoring**: Track communication between pods and services, offering a clear view of traffic patterns and dependencies.
+- **Resource Utilization Analysis**: Gain insights into CPU, memory, and disk usage at the pod level to ensure resources are effectively utilized.
+- **Latency Tracking**: Measure latency across services, allowing teams to pinpoint slow-downs in service-to-service communication.
+- **Automatic Root Cause Analysis (RCA)**: Leverages AI-driven RCA to help identify the underlying causes of issues without manual troubleshooting.
+- **Log and Trace Integration**: Seamlessly integrates with logging and tracing systems to provide a complete view of application health.
+- **Real-Time Analytics**: With eBPF at its core, Kubesense captures data in real-time, making it accessible for immediate analysis without impacting performance.
+
+---
+
+## 🚀 Overview
+
+This guide covers two deployment strategies for Kubesense in on-premises Kubernetes clusters:
+
+1. **Single-Cluster Deployment**: All server components are deployed within the same Kubernetes cluster, offering a straightforward setup.
+2. **Multi-Cluster Deployment**: Server and sensor components are deployed in separate clusters, providing flexibility for larger, multi-cluster environments.
+
+Choose the approach that best suits your infrastructure and observability needs.
+
+## 🌐 Monitoring and Exploring with Kubesense
+
+Once Kubesense is deployed, you can explore its robust observability features to gain actionable insights into your cluster's performance and behavior. Key features include:
+
+- **Network Traffic Monitoring**: Visualize traffic flows between pods and services with real-time data powered by eBPF.
+- **Latency Tracking**: Track latency between services and identify bottlenecks in your cluster’s communication pathways.
+- **Comprehensive Log Capture**: Collect critical logs for in-depth monitoring and troubleshooting.
+- **Resource Usage Monitoring**: Monitor CPU, memory, and disk usage on a per-pod basis, ensuring efficient resource allocation and management.
+
+With these capabilities, Kubesense provides a holistic view of your Kubernetes environment, helping you maintain optimal performance, troubleshoot issues quickly, and optimize resource utilization.
+
+---
+
+This guide equips you with everything you need to deploy Kubesense successfully and start leveraging its advanced observability features. Happy monitoring!

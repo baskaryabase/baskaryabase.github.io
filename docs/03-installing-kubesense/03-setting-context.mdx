@@ -1,0 +1,95 @@
+---
+title: Setting Context for Kubesense Deployment
+---
+
+Before deploying Kubesense in your on-premise Kubernetes environment, it’s essential to understand the roles of its core components—the **server** and **sensor**—and how they work together to provide full observability into your clusters.
+
+---
+
+## 🔍 Overview of Kubesense Components
+
+Kubesense consists of two primary components, each serving a specific purpose in the observability process:
+
+### 1. Sensor Components
+- **Role**: The sensor component is responsible for data collection within each Kubernetes cluster.
+- **Functionality**: Sensors utilize **eBPF** to trace system and network activities, capturing key metrics like:
+  - Pod communications
+  - Resource utilization (CPU, memory)
+  - Network latency and throughput
+- **Data Transmission**: The collected data is sent to the Kubesense server for processing and storage.
+- **Scalability**: Multiple sensors can be deployed across different clusters, allowing for comprehensive observability in multi-cluster environments.
+
+### 2. Server Components
+- **Role**: The server component processes and stores the data received from sensors, providing a central hub for managing observability data.
+- **Functionality**: The server aggregates observability information and makes it available through a **dashboard**, where users can visualize and analyze data from the clusters.
+- **Centralized Management**: The server acts as the centralized point for managing all clusters and sensors, allowing for streamlined monitoring and analysis.
+
+---
+
+## 🗺️ Deployment Context
+
+Kubesense can be deployed in two distinct ways, depending on the observability needs and infrastructure setup of your organization:
+
+- **In-cluster Deployment**: Both the server and sensor components are deployed in the same Kubernetes cluster, simplifying the setup and keeping data collection and visualization within a single cluster.
+- **Multi-cluster Deployment**: The server and sensor components are deployed separately, allowing the server to collect and aggregate data from multiple clusters. This approach is ideal for organizations managing multiple Kubernetes clusters.
+
+---
+
+## 📡 Kubesense Sensor: Data Collection
+
+The **sensor** components are deployed within individual Kubernetes clusters and play a key role in collecting real-time observability data. They leverage eBPF for efficient, low-overhead tracing of system-level activities.
+
+### Data Collected by Sensors
+Sensors collect a variety of critical metrics, including:
+- **Logging**: Collect logs from all cluster components in a unified view.
+- **Network Traffic**: Monitors traffic between pods and services.
+- **Resource Usage**: Tracks CPU, memory, and disk usage to understand resource consumption.
+- **Latency and Throughput**: Captures latency metrics for service communications, aiding in the detection of bottlenecks.
+
+### Key Considerations for Sensor Deployment
+- **Communication**: Sensors need secure communication with the server to transmit collected data. Configure network policies or firewalls as necessary to enable this communication.
+- **Minimal Overhead**: Designed to operate with minimal performance impact, sensors rely on eBPF for efficient data collection without significant resource drain on the cluster.
+
+---
+
+## 🗄️ Kubesense Server: Data Processing and Storage
+
+The **server** component is the central processing hub in Kubesense, receiving data from sensors deployed across clusters and making it accessible to users through a dashboard.
+
+### Server Responsibilities
+- **Data Aggregation**: Collects data from multiple sensors, aggregating it for further analysis.
+- **Data Storage**: Stores observability data in a database or data warehouse, supporting long-term storage, query capabilities, and data analytics.
+- **User Dashboard**: Provides a web-based dashboard for users to visualize metrics, analyze network traffic, and monitor resource usage in real-time.
+
+### Key Considerations for Server Deployment
+- **Persistent Storage**: The server requires persistent storage for databases or data warehouses to store large volumes of data.
+- **Dashboard Accessibility**: Set up an external hostname or ingress for the Kubesense dashboard, allowing users to access the UI securely.
+
+---
+
+## 🔧 Preparing for Deployment
+
+To ensure a successful deployment of Kubesense, follow these guidelines for setting up both sensor and server components:
+
+- **Sensor Setup**:
+  - Verify that Kubernetes nodes support eBPF for low-level system tracing.
+  - Ensure that network configurations allow secure communication between sensors and the server.
+
+- **Server Setup**:
+  - Configure an external hostname or ingress to make the Kubesense dashboard accessible.
+  - Allocate persistent storage for data aggregation and retention.
+
+---
+
+## 📌 Next Steps
+
+With a clear understanding of the deployment context, proceed with the installation steps to deploy Kubesense using Helm. Choose a deployment approach based on your observability requirements:
+
+- [Deploy Server and Sensor Together (In-cluster)](./04-install-using/02-helm.mdx#deploy-kubesense-for-in-cluster-deployment)
+- [Deploy Server and Sensor Separately (Multi-cluster)](./04-install-using/02-helm.mdx#deploying-server--sensor-separately)
+
+By understanding the roles of each component and setting up the required infrastructure, you’ll be well-prepared to deploy Kubesense effectively and gain comprehensive observability across your Kubernetes clusters.
+
+--- 
+
+This setup empowers your team with real-time insights into Kubernetes environments, helping you optimize performance, troubleshoot issues, and maintain healthy clusters.

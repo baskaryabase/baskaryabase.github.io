@@ -1,0 +1,52 @@
+# Datadog
+
+## Integrating Datadog Traces with Kubesense
+
+Kubesense fully supports the ingestion of Datadog APM traces, allowing them to be displayed natively within our platform. This integration provides a powerful, seamless experience, combining eBPF and Datadog traces to offer even deeper insights into your applications.
+
+Once ingested, Datadog traces will appear as Distributed Traces directly in the Kubesense platform, enabling you to visualize and analyze your data more efficiently.
+
+## Methods for Ingesting Datadog Traces into Kubesense
+
+There are two primary methods for ingesting Datadog traces into Kubesense:
+
+1. **Dual Shipping from the Datadog Agent**: Sending traces to both Datadog and Kubesense.
+2. **Redirecting the Datadog SDK**: Sending traces directly to the Kubesense endpoint.
+
+### Finding the Kubesense Sensor Service Endpoint
+
+Both the Dual Shipping and SDK redirection methods require you to determine the Kubesense endpoint where the traces will be sent. Use the provided instructions to find the Sensor service endpoint, referred to as `{KUBESENSOR_HOST}`.
+
+### 1. Dual Shipping from the Datadog Agent
+
+**Note**:
+This method will send traces both to DataDog and to kubesense, and relies on having a running DataDog agent. 
+
+**Environment Variables for Dual Shipping**
+To set up Dual Shipping, you’ll need to apply the following environment variable to your deployment in order to redirect the Datadog agent traffic to the Kubesense ingestion endpoint:
+
+```yaml
+- name: DD_APM_ADDITIONAL_ENDPOINTS
+  value: '{"http://{KUBESENSOR_HOST}:{KUBESENSOR_PORT}":["no_auth"]}'
+```
+Note: that the "no_auth" shall be left as is, as the ingestion does not require any type of apikey.
+
+### 2. Redirecting the Datadog SDK to Kubesense Endpoint
+
+Alternatively, you can configure the Datadog SDK to send traces directly to the Kubesense endpoint, bypassing the Datadog agent entirely. This method is particularly useful if you want to reduce dependencies on the Datadog agent or if you're already using custom instrumentation.
+
+```yaml
+env:
+  - name: DD_TRACE_AGENT_URL
+    value: "http://{KUBESENSOR_HOST}:{KUBESENSOR_PORT}"
+  - name: SERVICE_POD_IP
+    valueFrom:
+      fieldRef:
+        fieldPath: status.podIP
+  - name: OTEL_RESOURCE_ATTRIBUTES
+    value: "kubesense.env_type=(k8s|docker),kubesense.ip=$(SERVICE_POD_IP)"
+```
+
+## Conclusion
+
+Kubesense provides an easy way to ingest and visualize Datadog APM traces, either through Dual Shipping or by redirecting the SDK to send traces to Kubesense. Both methods allow for enhanced visibility and insights into your applications, enabling you to combine eBPF tracing with Datadog data for a richer observability experience.
