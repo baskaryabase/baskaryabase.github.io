@@ -74,7 +74,7 @@ const config: Config = {
     },
     image: 'https://kubesense-web.s3.ap-south-1.amazonaws.com/images/og_image.png',
     navbar: {
-      title: 'Takeaways of Baskar Yabase',
+      title: 'Baskar Yabase',
       // logo: {
       //   alt: 'KubeSense logo',
       //   src: 'img/kubesense-black.svg',
@@ -128,7 +128,7 @@ const config: Config = {
         // },
         
       ],
-      copyright: 'Made with devotion',
+      copyright: 'Made with Discipline to become Disciple',
     },
     prism: {
       theme: prismThemes.github,
