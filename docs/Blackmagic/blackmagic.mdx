@@ -1,0 +1,44 @@
+---
+title: "Learning in 2025 Prayer Camp Live Setup"
+sidebar_position: 1
+---
+
+### Key Learnings with Blackmagic (Oct 1-3)
+
+1. **Green Screen Issue – Causes**
+
+   * **Primary:** Mismatched **frame rates** and **resolutions** between cameras are the main trigger for green screen problems.
+   * **Secondary:** Device **overheating** can also cause the issue.
+
+2. **Resolution & Frame Rate Control**
+
+   * The **Blackmagic Software Control** allows manual configuration of resolution and frame rate.
+   * ![Atem Mini software control](./assets/AtemSoftwareControlSettings.png)
+   * Test setup:
+     * **2x Sony NX200** and **1x Panasonic CX30** at **1080/50p** → worked fine with **3m HDMI cables** (no signal loss).
+     * With **20m HDMI cables**, signal quality drops, causing bitrate loss → max **30fps is recommended** for stability.
+
+3. **Port Behavior (Hidden Feature)**
+
+   * **Port 1** is more **tolerant** and accepts a wider range of input signals even if its weak signal. 
+   * **Ports 2, 3, and 4** are **stricter**, requiring the input to **exactly match** the Blackmagic video standard setting and strong signal.
+
+4. **Wireless HDMI**
+
+   * Wireless HDMI **transmitters and receivers** work reliably since signal strength is strong and avoids long-cable losses.
+
+5. **Blackmagic Outputs**
+
+   * **USB Output:** Acts as a **webcam output** (shows up as “Blackmagic”), used as the **primary source**.
+   * **HDMI Output (Output 1):** Sent to a **Camlink** and connected as an additional video source.
+   * For monitoring, in **Software Control**, Output 1 can be switched to **Multiview** mode.
+   * ![Multiview Output](./assets/multiview.jpeg)
+
+6. **Projection and Lyrics Setup**
+
+   * **Second Laptop:** Used for **projecting song lyrics and Bible verses**.
+   * The laptop uses **two HDMI outputs**:
+
+     * **One HDMI** goes to the **projector** (for full-screen display for the audience).
+     * **Another HDMI** is **split** to both the **TV** (showing next-lyrics stage view) and **Blackmagic HDMI Input 4**.
+   * This setup enables the **projector** to show the live lyrics while the **TV** displays the next line or stage view for singers and operators.
