@@ -1,0 +1,289 @@
+---
+title: "QA Engineer Interview Questions"
+sidebar_position: 1
+---
+
+# **Section 4 – Selenium (Comparison & Depth)**
+
+### **1. Difference between Selenium and Playwright**
+
+**Answer:**
+Selenium controls browsers via WebDriver protocol; Playwright uses direct browser APIs — faster, supports multiple browsers, auto-waiting, and built-in parallelism.
+
+---
+
+### **2. How to handle dynamic elements in Selenium**
+
+**Answer:**
+Use dynamic XPaths or explicit waits:
+
+```java
+WebDriverWait wait = new WebDriverWait(driver, 10);
+wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("dynamic")));
+```
+
+---
+
+### **3. Implicit vs Explicit Waits**
+
+**Answer:**
+
+* **Implicit:** Applies globally for all elements.
+* **Explicit:** Waits for a specific condition or element.
+
+---
+
+### **4. Parallel Execution in Selenium**
+
+**Answer:**
+Use **TestNG parallel execution** or **Selenium Grid** to run tests across browsers.
+
+---
+
+### **5. Screenshot capture on failure**
+
+**Answer:**
+
+```java
+File src = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
+FileUtils.copyFile(src, new File("error.png"));
+```
+
+
+# **Section 1 – Playwright**
+
+### **1. What advantages does Playwright have over Selenium?**
+
+**Answer:**
+Playwright supports **multiple browsers (Chromium, WebKit, Firefox)** using a single API, handles **auto-waiting**, **network interception**, **tracing**, and offers **faster execution** and **built-in parallelization**.
+
+---
+
+### **2. How does Playwright handle auto-waiting?**
+
+**Answer:**
+Playwright automatically waits for elements to be ready before performing actions like `click()` or `fill()`, reducing flakiness without requiring explicit waits.
+
+---
+
+### **3. How do you handle authentication in Playwright?**
+
+**Answer:**
+Use **storage state**:
+
+```ts
+await page.context().storageState({ path: 'state.json' });
+```
+
+Reuse this state in future tests via `use: { storageState: 'state.json' }` in the config.
+
+---
+
+### **4. How do you capture screenshots or videos of failed tests?**
+
+**Answer:**
+Use the `screenshot` and `video` options in the Playwright config or inside test hooks:
+
+```ts
+await page.screenshot({ path: 'error.png' });
+```
+
+Enable `video: 'on'` in the config for automatic recording.
+
+---
+
+### **5. How do you run Playwright tests in parallel and headless mode?**
+
+**Answer:**
+
+* **Parallel:** Playwright Test runs specs in parallel by default; control it via `--workers`.
+* **Headless:** Add `headless: true` in `browser` launch options.
+
+---
+
+### **6. How do you perform API testing using Playwright?**
+
+**Answer:**
+Playwright has a **request context** for HTTP calls:
+
+```ts
+const response = await request.get('https://api.example.com/users');
+expect(response.ok()).toBeTruthy();
+```
+
+---
+
+### **7. How do you perform visual regression testing in Playwright?**
+
+**Answer:**
+Use `expect(page).toHaveScreenshot('baseline.png')` to compare screenshots with a baseline image.
+
+---
+
+### **8. How do you intercept or mock network requests?**
+
+**Answer:**
+Use `page.route()`:
+
+```ts
+await page.route('**/api/data', route => route.fulfill({ status: 200, body: '{"mock":"data"}' }));
+```
+
+---
+
+### **9. How do you manage test data in Playwright?**
+
+**Answer:**
+Through environment variables, JSON files, or the `test.use()` API to inject dynamic data into test contexts.
+
+---
+
+### **10. How do you structure a Playwright project for scalability?**
+
+**Answer:**
+Use **Page Object Model (POM)**, **fixtures** for setup/teardown, a **config file** for environments, and **tag tests** for grouping and filtering.
+
+---
+
+# **Section 2 – GitHub Actions (CI/CD)**
+
+### **1. How do you run Playwright tests in GitHub Actions?**
+
+**Answer:**
+Use a workflow like:
+
+```yaml
+name: Playwright Tests
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20 }
+      - run: npm ci
+      - run: npx playwright install --with-deps
+      - run: npx playwright test
+```
+
+---
+
+### **2. How do you store secrets securely?**
+
+**Answer:**
+Store tokens/credentials in **GitHub Secrets** and access them via `${{ secrets.MY_SECRET }}` in workflows.
+
+---
+
+### **3. How can you trigger tests only when code in `/tests` changes?**
+
+**Answer:**
+
+```yaml
+on:
+  push:
+    paths:
+      - 'tests/**'
+```
+
+---
+
+### **4. How do you publish Playwright test reports?**
+
+**Answer:**
+After test execution, upload reports:
+
+```yaml
+- uses: actions/upload-artifact@v4
+  with:
+    name: playwright-report
+    path: playwright-report/
+```
+
+---
+
+### **5. How do you parallelize test execution in GitHub Actions?**
+
+**Answer:**
+Use a **matrix strategy**:
+
+```yaml
+strategy:
+  matrix:
+    browser: [chromium, firefox, webkit]
+```
+
+---
+
+### **6. What’s the difference between workflow triggers?**
+
+**Answer:**
+
+* **push:** Runs on any push.
+* **pull_request:** Runs on PR creation or update.
+* **workflow_dispatch:** Manual trigger.
+
+---
+
+### **7. How do you integrate notifications for build failures?**
+
+**Answer:**
+Use Slack or email notification actions:
+
+```yaml
+- uses: slackapi/slack-github-action@v1
+```
+
+---
+
+### **8. How to run browser tests in a headless CI environment?**
+
+**Answer:**
+Install dependencies with `npx playwright install --with-deps` and use `headless: true`.
+
+---
+
+# **Section 3 – Performance / Load Testing**
+
+### **1. What tools can you use for load testing?**
+
+**Answer:**
+Common tools: **JMeter**, **k6**, **Locust**, and **Gatling**.
+
+---
+
+### **2. Example: Basic k6 script for API load test**
+
+```js
+import http from 'k6/http';
+import { check } from 'k6';
+export default function () {
+  const res = http.get('https://api.example.com/users');
+  check(res, { 'status is 200': (r) => r.status === 200 });
+}
+```
+
+---
+
+### **3. What are key metrics in performance testing?**
+
+**Answer:**
+**Response time**, **throughput**, **error rate**, **concurrent users**, **latency**, and **percentile response times** (P95, P99).
+
+---
+
+### **4. How do you integrate load tests into CI/CD?**
+
+**Answer:**
+Add a job in Jenkins or GitHub Actions to execute the load test script and collect reports before deployment.
+
+---
+
+### **5. Difference between Load, Stress, and Endurance testing**
+
+| Type          | Purpose                                                |
+| ------------- | ------------------------------------------------------ |
+| **Load**      | Check system behavior under expected load              |
+| **Stress**    | Find breaking point by increasing load beyond capacity |
+| **Endurance** | Check for performance degradation over time            |
