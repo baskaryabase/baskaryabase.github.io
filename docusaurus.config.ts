@@ -3,8 +3,8 @@ import type { Config } from '@docusaurus/types';
 import { themes as prismThemes } from 'prism-react-renderer';
 
 const config: Config = {
-  title: 'KubeSense Documentation',
-  tagline: 'Dinosaurs are cool',
+  title: 'Baskar Yabase',
+  tagline: 'Faith',
   favicon: 'img/favicon.svg',
 
   plugins : ['docusaurus-plugin-sass'],
